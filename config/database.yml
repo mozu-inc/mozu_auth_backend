@@ -1,0 +1,21 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8mb4
+  database: <%= ENV.fetch('DB_NAME') { 'mozu_auth_development' } %>
+  pool:     <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host:     <%= ENV.fetch('DB_HOST') { 'auth-db' } %>
+  username: <%= ENV.fetch('DB_USER') { 'root' } %>
+  password: <%= ENV.fetch('DB_PASSWORD') { 'password' } %>
+  socket:   <%= ENV.fetch('SOCKET') { '/tmp/mysql.sock' } %>
+
+development:
+  <<: *default
+  database: mozu_auth_development
+
+test:
+  <<: *default
+  database: mozu_auth_test
+
+production:
+  <<: *default
+  database: mozu_auth_production

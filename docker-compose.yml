@@ -1,0 +1,45 @@
+version: '3'
+services:
+  auth-dev: &app
+    container_name: auth-dev
+    build: .
+    platform: linux/amd64
+    env_file: .env.local
+    volumes:
+      - .:/usr/src/app
+    tty: true
+    stdin_open: true
+    command: ash -c "rm -f tmp/pids/server.pid && rm -rf tmp/spec && bundle exec rails s -b 0.0.0.0 -p 3001"
+    ports:
+      - "3002:3001"
+    depends_on:
+      - auth-db
+  auth-db:
+    container_name: auth-db
+    image: mysql:8.0
+    command: --explicit_defaults_for_timestamp=1 --character-set-server=utf8mb4
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+#  localstack:
+#    container_name: auth-localstack
+#    image: localstack/localstack:latest
+#    ports:
+#      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+#      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+#    environment:
+#      - SERVICES=s3
+#      - AWS_DEFAULT_REGION=ap-northeast-1
+#      - DATA_DIR=/tmp/localstack/data
+#      - DISABLE_CORS_CHECKS=1
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#      - localstack-data:/tmp/localstack
+volumes:
+  db-data:
+    driver: local
+#  localstack-data:
+#    driver: local
